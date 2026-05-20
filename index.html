@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas de Automedicación Responsable — Salud Consciente Minatitlán</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e2ded6;
+    --text: #1a1814;
+    --text-muted: #6b6760;
+    --text-hint: #a09d97;
+    --green-bg: #edf5e4; --green-border: #b6d98a; --green-text: #3a6b12;
+    --amber-bg: #fdf3df; --amber-border: #f5c96a; --amber-text: #7a4d08;
+    --red-bg: #fdecea;   --red-border:  #f5a8a0; --red-text:  #8f1f1a;
+    --accent: #2d6a4f;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HERO */
+  .hero { background: var(--accent); color: #fff; padding: 3rem 2rem 2.5rem; text-align: center; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; opacity: .7; margin-bottom: .75rem; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin-bottom: .5rem; }
+  .hero h1 em { font-style: italic; opacity: .85; }
+  .hero-sub { font-size: 14px; opacity: .7; margin-top: .5rem; }
+  .hero-badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+  .hero-badge { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 20px; font-size: 12px; padding: 4px 12px; }
+
+  /* TOOLBAR */
+  .toolbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: .4; pointer-events: none; }
+  input[type=search] { width: 100%; padding: 9px 10px 9px 34px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-family: inherit; font-size: 14px; color: var(--text); outline: none; transition: border-color .15s; }
+  input[type=search]:focus { border-color: var(--accent); }
+  select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-family: inherit; font-size: 14px; color: var(--text); cursor: pointer; outline: none; }
+  select:focus { border-color: var(--accent); }
+  .print-btn { margin-left: auto; display: flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-family: inherit; font-size: 13px; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: background .15s; }
+  .print-btn:hover { background: var(--bg); }
+  .print-btn svg { opacity: .6; }
+
+  /* STATS */
+  .stats { padding: .75rem 2rem; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .stat-pill { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; }
+  .sp-total { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
+  .sp-green { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+  .sp-amber { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+  .sp-red   { background: var(--red-bg);   color: var(--red-text);   border: 1px solid var(--red-border); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: 1px; }
+  .dg { background: #5a9e2f; } .da { background: #d4880e; } .dr { background: #c0392b; }
+
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; padding: 1rem 2rem 3rem; }
+
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: box-shadow .2s, border-color .2s; }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); border-color: #ccc; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; user-select: none; gap: 10px; }
+  .card-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .card-icon svg { width: 20px; height: 20px; }
+  .card-info { flex: 1; min-width: 0; }
+  .card-name { font-size: 14px; font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-generic { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+  .card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .b-bajo  { background: var(--green-bg); color: var(--green-text); }
+  .b-medio { background: var(--amber-bg); color: var(--amber-text); }
+  .b-alto  { background: var(--red-bg);   color: var(--red-text); }
+  .chevron { transition: transform .2s; color: var(--text-hint); flex-shrink: 0; }
+  .chevron.open { transform: rotate(180deg); }
+
+  /* CARD BODY */
+  .card-body { border-top: 1px solid var(--border); padding: 14px 16px; display: none; }
+  .card-body.open { display: block; }
+  .semaforo { display: flex; align-items: center; gap: 5px; margin-bottom: 12px; }
+  .sem-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .sem-off { background: var(--border); }
+  .sem-green { background: #5a9e2f; }
+  .sem-amber { background: #d4880e; }
+  .sem-red   { background: #c0392b; }
+  .sem-label { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+  .cat-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg); margin-bottom: 12px; }
+  .field { margin-bottom: 10px; }
+  .field-label { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-hint); margin-bottom: 3px; }
+  .field-val { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+  .msg-key { margin-top: 12px; padding: 9px 13px; font-size: 13px; font-style: italic; border-left: 3px solid; line-height: 1.5; }
+  .mk-bajo  { background: var(--green-bg); border-color: #5a9e2f; color: var(--green-text); }
+  .mk-medio { background: var(--amber-bg); border-color: #d4880e; color: var(--amber-text); }
+  .mk-alto  { background: var(--red-bg);   border-color: #c0392b; color: var(--red-text); }
+
+  /* EMPTY */
+  .empty { grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: var(--text-hint); }
+  .empty svg { margin-bottom: 12px; opacity: .4; }
+  .empty p { font-size: 14px; }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 2rem; font-size: 12px; color: var(--text-hint); border-top: 1px solid var(--border); }
+  footer strong { color: var(--text-muted); font-weight: 500; }
+
+  /* PRINT */
+  @media print {
+    .toolbar, .hero-badge-row, .stats, .print-btn { display: none !important; }
+    .hero { background: #2d6a4f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 1rem; }
+    .card { break-inside: avoid; box-shadow: none !important; }
+    .card-body { display: block !important; }
+    .chevron { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .toolbar { padding: .75rem 1rem; }
+    .grid { padding: .75rem 1rem 2rem; gap: 10px; }
+    .stats { padding: .5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="hero-eyebrow">Salud Consciente Minatitlán · Minatitlán, Veracruz · 2025</p>
+  <h1>Atlas de <em>Automedicación</em><br>Responsable</h1>
+  <p class="hero-sub">Iniciativa educativa en salud pública — uso responsable de medicamentos de libre acceso</p>
+  <div class="hero-badge-row">
+    <span class="hero-badge">20 medicamentos</span>
+    <span class="hero-badge">Orden alfabético</span>
+    <span class="hero-badge">Semáforo de riesgo</span>
+    <span class="hero-badge">Basado en evidencia</span>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8.5" cy="8.5" r="5"/><path d="M13 13l3.5 3.5"/></svg>
+    <input type="search" id="q" placeholder="Buscar medicamento…" autocomplete="off">
+  </div>
+  <select id="cat">
+    <option value="">Todas las categorías</option>
+    <option value="Analgésico / antipirético">Analgésicos / antipiréticos</option>
+    <option value="Antiinflamatorio">Antiinflamatorios</option>
+    <option value="Antibiótico">Antibióticos</option>
+    <option value="Antihistamínico">Antihistamínicos</option>
+    <option value="Antiácido / gastro">Antiácidos / gastro</option>
+    <option value="Antigripal / descongestionante">Antigripales / descongestionantes</option>
+    <option value="Antidiarreico">Antidiarreicos</option>
+    <option value="Antifúngico">Antifúngicos</option>
+    <option value="Vitaminas / suplementos">Vitaminas / suplementos</option>
+    <option value="Ansiolítico (controlado)">Ansiolíticos (controlados)</option>
+    <option value="Laxante">Laxantes</option>
+  </select>
+  <select id="riesgo">
+    <option value="">Todos los riesgos</option>
+    <option value="bajo">Riesgo bajo</option>
+    <option value="medio">Riesgo medio</option>
+    <option value="alto">Riesgo alto</option>
+  </select>
+  <button class="print-btn" onclick="window.print()">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="13" width="12" height="5" rx="1"/><path d="M4 9V4a1 1 0 011-1h10a1 1 0 011 1v5"/><rect x="6" y="9" width="8" height="6" rx="1"/><circle cx="15" cy="11" r="1" fill="currentColor" stroke="none"/></svg>
+    Imprimir
+  </button>
+</div>
+
+<div class="stats" id="stats"></div>
+<div class="grid" id="grid"></div>
+
+<footer>
+  <strong>Salud Consciente Minatitlán</strong> — "Educa. Prevén. Protege." · Iniciativa educativa en salud pública · Minatitlán, Veracruz · 2025
+</footer>
+
+<script>
+const MEDS = [
+  {n:"Amoxicilina",g:"amoxicilina",cat:"Antibiótico",r:"alto",
+   uso:"Tratamiento de infecciones bacterianas confirmadas (faringitis, otitis, neumonía leve).",
+   error:"Uso en infecciones virales como gripe o resfriado común.",
+   ef:"Resistencia bacteriana, reacciones alérgicas (hasta anafilaxia), alteración de microbiota intestinal.",
+   msg:"Los antibióticos no curan virus: úsalos solo si el médico los indica."},
+  {n:"Antiácido (hidróxido de Al/Mg)",g:"antiácido",cat:"Antiácido / gastro",r:"bajo",
+   uso:"Alivio temporal de acidez, gastritis y reflujo leve.",
+   error:"Uso crónico sin diagnóstico ni tratamiento de la causa subyacente.",
+   ef:"Estreñimiento, diarrea, interferencia con absorción de otros medicamentos.",
+   msg:"La acidez frecuente merece diagnóstico: el antiácido alivia pero no cura."},
+  {n:"Azitromicina",g:"azitromicina",cat:"Antibiótico",r:"alto",
+   uso:"Infecciones respiratorias y de transmisión sexual bajo prescripción médica.",
+   error:"Automedicación para cualquier tos o síntoma gripal sin diagnóstico.",
+   ef:"Resistencia bacteriana, prolongación del intervalo QT (riesgo cardíaco), náuseas.",
+   msg:"Tomar antibióticos sin receta genera resistencia: protege tu salud y la de todos."},
+  {n:"Cetirizina",g:"cetirizina",cat:"Antihistamínico",r:"bajo",
+   uso:"Alivio de síntomas alérgicos: rinitis, urticaria, picazón.",
+   error:"Uso prolongado sin evaluar la causa de la alergia.",
+   ef:"Somnolencia, boca seca; poco frecuente a dosis terapéuticas.",
+   msg:"Controla los síntomas, pero identifica y evita el alérgeno."},
+  {n:"Clonazepam",g:"clonazepam",cat:"Ansiolítico (controlado)",r:"alto",
+   uso:"Tratamiento de epilepsia y trastornos de ansiedad bajo estricta supervisión médica.",
+   error:"Uso para dormir o 'calmar los nervios' sin receta médica.",
+   ef:"Dependencia física, síndrome de abstinencia, depresión del SNC, accidentes.",
+   msg:"Es un medicamento controlado: nunca lo uses sin prescripción, genera dependencia."},
+  {n:"Diclofenaco",g:"diclofenaco",cat:"Antiinflamatorio",r:"medio",
+   uso:"Inflamación y dolor musculoesquelético, artritis, dismenorrea.",
+   error:"Uso frecuente sin protección gástrica o en pacientes con riesgo cardiovascular.",
+   ef:"Daño gástrico, aumento de riesgo cardiovascular, daño renal con uso prolongado.",
+   msg:"Uno de los AINEs con mayor riesgo cardiovascular: úsalo el menor tiempo posible."},
+  {n:"Dimenhidrinato",g:"dimenhidrinato",cat:"Antihistamínico",r:"bajo",
+   uso:"Prevención y tratamiento del mareo por movimiento, náuseas y vómito.",
+   error:"Uso como sedante o para inducir el sueño.",
+   ef:"Somnolencia intensa, boca seca, retención urinaria, confusión en adultos mayores.",
+   msg:"Es para el mareo, no para dormir: la somnolencia es un efecto adverso, no el objetivo."},
+  {n:"Fluconazol",g:"fluconazol",cat:"Antifúngico",r:"medio",
+   uso:"Tratamiento de candidiasis vaginal y oral con diagnóstico confirmado.",
+   error:"Uso sin diagnóstico o repetido sin consultar al médico.",
+   ef:"Interacciones farmacológicas graves, hepatotoxicidad con uso prolongado.",
+   msg:"No toda secreción vaginal es candidiasis: el diagnóstico correcto es clave."},
+  {n:"Ibuprofeno",g:"ibuprofeno",cat:"Antiinflamatorio",r:"medio",
+   uso:"Dolor e inflamación: cefalea, fiebre, dolor muscular, dismenorrea.",
+   error:"Uso prolongado, sin alimento o en ayunas; combinación con alcohol.",
+   ef:"Gastritis, úlcera péptica, daño renal y cardiovascular con uso crónico.",
+   msg:"No es inofensivo solo porque se vende sin receta."},
+  {n:"Loperamida",g:"loperamida",cat:"Antidiarreico",r:"medio",
+   uso:"Control sintomático de la diarrea aguda no infecciosa.",
+   error:"Uso en diarreas infecciosas con fiebre o sangre, o en niños pequeños sin indicación.",
+   ef:"Íleo paralítico, retención del agente patógeno en diarreas bacterianas.",
+   msg:"Detener la diarrea infecciosa puede ser peligroso: consulta si hay fiebre o sangre."},
+  {n:"Loratadina",g:"loratadina",cat:"Antihistamínico",r:"bajo",
+   uso:"Rinitis alérgica, urticaria, síntomas alérgicos en general.",
+   error:"Combinación con alcohol o sedantes sin saber que potencia la somnolencia.",
+   ef:"Somnolencia leve, cefalea; generalmente bien tolerada.",
+   msg:"Opción segura para alergias, pero no resuelve la causa subyacente."},
+  {n:"Metoclopramida",g:"metoclopramida",cat:"Antiácido / gastro",r:"medio",
+   uso:"Náuseas, vómito y reflujo gastroesofágico bajo indicación médica.",
+   error:"Uso prolongado o frecuente sin supervisión.",
+   ef:"Movimientos involuntarios (discinesia tardía), síntomas extrapiramidales.",
+   msg:"Uso máximo 5 días: el uso prolongado puede causar daño neurológico irreversible."},
+  {n:"Naproxeno",g:"naproxeno",cat:"Antiinflamatorio",r:"medio",
+   uso:"Dolor musculoesquelético, dismenorrea, artritis.",
+   error:"Uso sin alimento, en pacientes con úlcera o insuficiencia renal.",
+   ef:"Daño gástrico, aumento de tensión arterial, daño renal con uso crónico.",
+   msg:"Tómalo siempre con alimento y por el menor tiempo posible."},
+  {n:"Omeprazol",g:"omeprazol",cat:"Antiácido / gastro",r:"medio",
+   uso:"Úlcera péptica, reflujo gastroesofágico, protección gástrica con AINEs.",
+   error:"Uso crónico sin diagnóstico ni seguimiento médico.",
+   ef:"Déficit de magnesio y vitamina B12 a largo plazo, infecciones intestinales.",
+   msg:"No es un antiácido para tomar a diario sin indicación: el uso crónico tiene riesgos."},
+  {n:"Paracetamol",g:"acetaminofén",cat:"Analgésico / antipirético",r:"medio",
+   uso:"Analgésico y antipirético de uso general: cefalea, fiebre, dolor leve a moderado.",
+   error:"Combinación con alcohol o sobredosis accidental al usar varios productos que lo contienen.",
+   ef:"Daño hepático grave, incluso con dosis que parecen terapéuticas al combinar fuentes.",
+   msg:"Respetar la dosis: más no es mejor, y muchos medicamentos ya lo contienen."},
+  {n:"Pseudoefedrina",g:"pseudoefedrina",cat:"Antigripal / descongestionante",r:"medio",
+   uso:"Descongestionante nasal en resfriados y sinusitis.",
+   error:"Uso en hipertensos, embarazadas o junto con inhibidores de la MAO.",
+   ef:"Aumento de tensión arterial, palpitaciones, insomnio, nerviosismo.",
+   msg:"Está contraindicada en hipertensión: revisa tus antecedentes antes de usarla."},
+  {n:"Sales de rehidratación oral",g:"suero oral",cat:"Antidiarreico",r:"bajo",
+   uso:"Reposición de líquidos y electrolitos en diarrea y vómito.",
+   error:"Preparación incorrecta o sustitución por bebidas azucaradas (jugos, refrescos).",
+   ef:"Hipernatremia si se prepara con poca agua; ineficaz si se usa incorrectamente.",
+   msg:"Sigue las instrucciones de preparación exactas: la concentración importa."},
+  {n:"Trimetoprim / sulfametoxazol",g:"TMP-SMX · cotrimoxazol",cat:"Antibiótico",r:"alto",
+   uso:"Infecciones urinarias no complicadas bajo diagnóstico médico.",
+   error:"Automedicación sin urocultivo o uso en alérgicos a sulfonamidas.",
+   ef:"Reacciones alérgicas graves (síndrome de Stevens-Johnson), resistencia bacteriana.",
+   msg:"Las infecciones urinarias recurrentes requieren cultivo: no te automediques."},
+  {n:"Vitamina C (ácido ascórbico)",g:"ácido ascórbico",cat:"Vitaminas / suplementos",r:"bajo",
+   uso:"Suplementación en deficiencia y apoyo al sistema inmune.",
+   error:"Creencia de que dosis altas previenen o curan el resfriado.",
+   ef:"Dosis elevadas causan diarrea osmótica y cálculos renales de oxalato.",
+   msg:"Los suplementos no reemplazan una dieta equilibrada ni curan infecciones."},
+  {n:"Zinc (suplemento)",g:"sulfato o gluconato de zinc",cat:"Vitaminas / suplementos",r:"bajo",
+   uso:"Suplementación en deficiencia comprobada y apoyo inmunológico.",
+   error:"Uso en dosis altas o prolongadas sin indicación médica.",
+   ef:"Náuseas, déficit de cobre con uso crónico a dosis altas.",
+   msg:"Los suplementos tienen límite: más zinc no significa más defensas."},
+];
+
+const RL = {bajo:"Riesgo bajo", medio:"Riesgo medio", alto:"Riesgo alto"};
+let expanded = new Set();
+
+function semaforo(r) {
+  return `<div class="semaforo">
+    <div class="sem-dot ${r==='bajo'?'sem-green':'sem-off'}"></div>
+    <div class="sem-dot ${r==='medio'?'sem-amber':'sem-off'}"></div>
+    <div class="sem-dot ${r==='alto'?'sem-red':'sem-off'}"></div>
+    <span class="sem-label">${RL[r]}</span>
+  </div>`;
+}
+
+function render() {
+  const q = document.getElementById('q').value.toLowerCase();
+  const cat = document.getElementById('cat').value;
+  const riesgo = document.getElementById('riesgo').value;
+  const list = MEDS.filter(m =>
+    (!q || m.n.toLowerCase().includes(q) || m.g.toLowerCase().includes(q)) &&
+    (!cat || m.cat === cat) &&
+    (!riesgo || m.r === riesgo)
+  );
+  const cb = {bajo:0, medio:0, alto:0};
+  list.forEach(m => cb[m.r]++);
+  document.getElementById('stats').innerHTML =
+    `<span class="stat-pill sp-total">${list.length} medicamento${list.length!==1?'s':''}</span>` +
+    (cb.bajo ? `<span class="stat-pill sp-green"><span class="dot dg"></span>${cb.bajo} bajo riesgo</span>` : '') +
+    (cb.medio ? `<span class="stat-pill sp-amber"><span class="dot da"></span>${cb.medio} riesgo medio</span>` : '') +
+    (cb.alto ? `<span class="stat-pill sp-red"><span class="dot dr"></span>${cb.alto} riesgo alto</span>` : '');
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty"><svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8.5" cy="8.5" r="5"/><path d="M13 13l3.5 3.5M6.5 8.5h4M8.5 6.5v4" stroke-linecap="round"/></svg><p>Sin resultados para esa búsqueda.</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(m => {
+    const open = expanded.has(m.n);
+    return `<div class="card">
+      <div class="card-header" onclick="toggle('${m.n.replace(/'/g,"\\'")}')">
+        <div class="card-info">
+          <div class="card-name">${m.n}</div>
+          <div class="card-generic">${m.g}</div>
+        </div>
+        <div class="card-right">
+          <span class="badge b-${m.r}">${RL[m.r]}</span>
+          <svg class="chevron${open?' open':''}" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7.5l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="card-body${open?' open':''}">
+        <span class="cat-chip">
+          <svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l7-6 7 6v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"/></svg>
+          ${m.cat}
+        </span>
+        ${semaforo(m.r)}
+        <div class="field"><div class="field-label">Uso común</div><div class="field-val">${m.uso}</div></div>
+        <div class="field"><div class="field-label">Error frecuente</div><div class="field-val">${m.error}</div></div>
+        <div class="field"><div class="field-label">Efectos adversos</div><div class="field-val">${m.ef}</div></div>
+        <div class="msg-key mk-${m.r}">"${m.msg}"</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggle(name) {
+  expanded.has(name) ? expanded.delete(name) : expanded.add(name);
+  render();
+}
+
+document.getElementById('q').addEventListener('input', render);
+document.getElementById('cat').addEventListener('change', render);
+document.getElementById('riesgo').addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
